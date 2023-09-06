@@ -70,6 +70,7 @@
       // alert(a);
       // console.log(a.terget);
       this.serPrevios();
+      this.data = ''
       alert(b)
     },
     equal(){
