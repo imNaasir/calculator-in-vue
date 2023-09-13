@@ -1,24 +1,24 @@
 <template>
   <div class="container">
-    <div class="print">{{ Number(data) || 0 }}</div>
+    <div id="print">{{ current || 0 }}</div>
     <button class="othersigns" @click="clear">C</button>
-    <button class="othersigns">+/-</button>
+    <button class="othersigns" @click="sign()">+/-</button>
     <button class="othersigns" @click="percentage">%</button>
-    <button class="operators" @click="divide">/</button>
-    <button class="numbers" @click="numbers('7')">7</button>
-    <button class="numbers" @click="numbers('8')">8</button>
-    <button class="numbers" @click="numbers('9')">9</button>
-    <button class="operators" @click="times">x</button>
-    <button class="numbers" @click="numbers('4')">4</button>
-    <button class="numbers" @click="numbers('5')">5</button>
-    <button class="numbers" @click="numbers('6')">6</button>
-    <button class="operators" @click="minus">-</button>
-    <button class="numbers" @click="numbers('1')">1</button>
-    <button class="numbers" @click="numbers('2')">2</button>
-    <button class="numbers" @click="numbers('3')">3</button>
-    <button class="operators" @click="add">+</button>
-    <button class="numbers zero" @click="numbers('0')">0</button>
-    <button class="numbers" @click="dot('.')">.</button>
+    <button class="operators" @click="append('/')">/</button>
+    <button class="numbers" @click="append('7')" @keypress="keypress">7</button>
+    <button class="numbers" @click="append('8')">8</button>
+    <button class="numbers" @click="append('9')">9</button>
+    <button class="operators" @click="append('*')">x</button>
+    <button class="numbers" @click="append('4')">4</button>
+    <button class="numbers" @click="append('5')">5</button>
+    <button class="numbers" @click="append('6')">6</button>
+    <button class="operators" @click="append('-')">-</button>
+    <button class="numbers" @click="append('1')">1</button>
+    <button class="numbers" @click="append('2')">2</button>
+    <button class="numbers" @click="append('3')">3</button>
+    <button class="operators" @click="append('+')">+</button>
+    <button class="numbers zero" @click="append('0')">0</button>
+    <button class="numbers" @click="dot">.</button>
     <button class="operators equal" @click="equal">=</button>
   </div>
 
@@ -31,72 +31,82 @@
 export default {
   data() {
     return {
-      data: 0,
-      operator: null,
-      previos: 0,
-      operatorClicked: false,
+      current: '',
+      // operator: null,
+      // previos: 0,
+      // operatorClicked: false,
     }
   },
   methods: {
     clear() {
-      this.data = 0;
+      this.current = '';
+    },
+    sign(){
+      this.current = this.current.charAt(0) === '-' ? this.current.slice(1) : `-${this.current}`
     },
     percentage() {
-      this.data = this.data / 100;
+      this.current = `${parseFloat(this.current)/100}`;
     },
-    numbers(val) {
-      if (this.operatorClicked) {
-        this.data = '';
-        this.operatorClicked = false;
-      }
-      this.data = `${this.data}${val}`;
+    append(number) {
+      this.current = `${this.current}${number}`;
     },
-    dot(val) {
-      if (this.data.indexOf('.') === -1) {
-        if (this.data === '') {
-          this.data = '0';
+    dot() {
+      if (this.current.indexOf('.') === -1) {
+        if(this.current === '') {
+          this.append('0')
         }
-        this.data = `${this.data}${val}`;
-        // alert(this.data)
+        this.append('.');
       }
-      // alert("val")
-    },
-    // serPrevios() {
-    //   this.previos = this.data
-    //   this.operatorClicked = true
-    // },
-    divide() {
-      this.operator = (a, b) => b / a;
-      this.previos = this.data
-      this.operatorClicked = true
-    },
-    times() {
-      this.operator = (a, b) => a * b;
-      this.previos = this.data
-      this.operatorClicked = true
-    },
-    minus() {
-      this.operator = (b, a) => a - b;
-      this.equal()
-      this.previos = this.data
-      this.operatorClicked = true
-    },
-    add() {
-      this.operator = (a, b) => a + b;
-      this.equal()
-      this.previos = this.data;
-      this.operatorClicked = true
     },
     equal() {
-      console.log(this.previos, this.data);
-      this.data = `${this.operator(
-        parseFloat(this.data),
-        parseFloat(this.previos)
-      )}`;
-      // this.previos = 0;
-      // alert("success");
+      this.current = eval(this.current)
     },
+  },
+  created() {
+    window.addEventListener('keypress', (e) => {
+      if (e.key == 0) {
+        this.append("0");
+      }else if (e.key == 1) {
+        this.append("1");
+      }else if (e.key == 2) {
+        this.append("2");
+      }else if (e.key == 3){
+        this.append("3")
+      }else if (e.key == 4){
+        this.append("4")
+      }else if (e.key == 5){
+        this.append("5")
+      }else if (e.key == 6){
+        this.append("6")
+      }else if (e.key == 7){
+        this.append("7")
+      }else if (e.key == 8){
+        this.append("8")
+      }else if (e.key == 9){
+        this.append("9")
+      }else if (e.key == "/"){
+        this.append("/")
+      }else if (e.key == "+"){
+        this.append("+")
+      }else if (e.key == "-"){
+        this.append("-")
+      }else if (e.key == "*"){
+        this.append("*")
+      }else if (e.key == "Enter"){
+        this.equal()
+      }else if (e.key == "%"){
+        this.percentage()
+      }else if (e.key == "."){
+        this.dot()
+      }else if (e.key == "c" || e.key == "C") {
+        this.clear();
+      }else{
+        this.current = "";
+        this.current = "Not a number";
+        document.getElementById("print").style.fontSize = "30px";
 
+      }
+    });
   },
 
 }
@@ -121,7 +131,7 @@ export default {
   overflow: hidden;
 }
 
-.print {
+#print {
   grid-column: 1/span 4;
   /* background-color: white; */
   padding-right: 10px;
